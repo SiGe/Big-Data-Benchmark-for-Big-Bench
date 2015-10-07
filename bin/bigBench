@@ -338,6 +338,13 @@ while getopts ":d:D:e:f:hm:p:q:s:t:Uv:w:y:z:abi:j:" OPT; do
   esac
 done
 
+trim() {
+    local var="$*"
+    var="${var#"${var%%[![:space:]]*}"}"   # remove leading whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"   # remove trailing whitespace characters
+    echo -n "$var"
+}
+
 # remove options from parameter list
 shift $((OPTIND-1))
 
@@ -353,8 +360,12 @@ export BIG_BENCH_NUMBER_OF_PARALLEL_STREAMS="${USER_NUMBER_OF_PARALLEL_STREAMS:-
 export BIG_BENCH_BENCHMARK_PHASE="${USER_BENCHMARK_PHASE:-"$BIG_BENCH_DEFAULT_BENCHMARK_PHASE"}"
 export BIG_BENCH_STREAM_NUMBER="${USER_STREAM_NUMBER:-"0"}"
 
+export BIG_BENCH_ENGINE=$(trim $BIG_BENCH_ENGINE)
+echo "Engine is :$BIG_BENCH_ENGINE"
+
 export BIG_BENCH_ENGINE_DIR="$BIG_BENCH_HOME/engines/$BIG_BENCH_ENGINE"
 export BIG_BENCH_ENGINE_CONF_DIR="$BIG_BENCH_ENGINE_DIR/conf"
+
 
 # test if numeric values are indeed numeric
 if [ -n "`echo "$BIG_BENCH_MAP_TASKS" | sed -e 's/[0-9]*//g'`" ]
